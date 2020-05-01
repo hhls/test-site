@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-autowire="byName"
+  xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" id="jsonConverter">
+    <property name="objectMapper">
+      <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+        <!-- 时区指定 -->
+        <property name="timeZone" value="GMT+8"/>
+        <property name="serializationInclusion" value="NON_NULL"/>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- 开启注解驱动 -->
+  <!-- 这样可以使用@Controller这些注解 -->
+  <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
+    <mvc:message-converters>
+      <ref bean="jsonConverter"/>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+
+  <!-- 修改配置,解决返回 json 时的 header 为 text/html 而不是 application/json的问题 -->
+  <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean" id="contentNegotiationManager">
+    <property name="favorPathExtension" value="false"/>
+  </bean>
+
+  <!-- 视图解析器 -->
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+</beans>
